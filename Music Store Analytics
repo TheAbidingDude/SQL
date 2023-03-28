@@ -1,4 +1,7 @@
-#Took information from Chinook database on Kaggle and performed data analysis on the data
+# For this project, I downloaded the Chinook database from Kaggle.
+# Then I imported the data from the .CSV file into the the table.
+# Finally, I performed analytics on the data using SQL.
+
 
 #Customers not based in USA
 SELECT FirstName, LastName, CustomerId, Country from customers
