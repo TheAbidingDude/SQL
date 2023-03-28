@@ -1,0 +1,77 @@
+#Took information from Chinook database on Kaggle and performed data analysis on the data
+
+#Customers not based in USA
+SELECT FirstName, LastName, CustomerId, Country from customers
+WHERE Country <> 'USA'
+
+#Customers from Brazil
+SELECT * FROM customers
+WHERE Country = 'Brazil'
+
+#Invoices from customers from Brazil
+SELECT Customers.FirstName, Customers.LastName, InvoiceId, InvoiceDate, BillingCountry from invoices
+LEFT JOIN customers
+on invoices.CustomerId = customers.CustomerId
+WHERE BillingCountry = 'Brazil'
+
+#Employees who are Sales Agents
+SELECT FirstName, LastName, Title FROM employees 
+WHERE Title LIKE 'Sales% %Agent'
+
+#List of unique countries from Invoice table
+SELECT DISTINCT BillingCountry FROM invoices
+
+#Invoices associated with each Sales Agent
+SELECT employees.FirstName||' '||employees.LastName as AgentName, invoices.InvoiceId
+FROM customers
+LEFT JOIN invoices on invoices.CustomerId = customers.CustomerId
+LEFT JOIN employees on  employees.EmployeeId = customers.SupportrepId
+
+#Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT invoices.Total, customers.FirstName||' '||customers.LastName as CustomerName, invoices.BillingCountry, employees.FirstName||' '||employees.LastName as AgentName
+FROM customers
+LEFT JOIN invoices on invoices.CustomerId = customers.CustomerId
+LEFT JOIN employees on employees.EmployeeId = customers.SupportRepId
+
+#How many invoices were there in 2009
+SELECT COUNT(InvoiceId) from invoices
+WHERE InvoiceDate LIKE '%2009%'
+
+#What are the Total Sales for 2009
+SELECT SUM(Total) as '2009 Sales Total' FROM invoices
+WHERE InvoiceDate LIKE '%2009%'
+
+#Show the purchased track name with each invoice ID
+SELECT invoice_items.InvoiceLineId, tracks.Name  
+FROM invoice_items
+LEFT JOIN tracks on tracks.TrackId = invoice_items.TrackId
+
+#Show the purchased track name AND artist name with each invoice ID
+SELECT tracks.Name, artists.Name, invoice_items.InvoiceLineId
+FROM invoice_items
+LEFT JOIN tracks on tracks.TrackId = invoice_items.TrackId
+LEFT JOIN albums on albums.AlbumId = tracks.AlbumId
+LEFT JOIN artists on artists.ArtistId = albums.ArtistId
+
+#Show all tracks with album name, media type, and genre
+SELECT tracks.Name, albums.Title, media_types.Name, genres.Name
+FROM tracks
+LEFT JOIN albums on albums.AlbumId = tracks.AlbumId
+LEFT JOIN media_types on media_types.MediaTypeId = tracks.MediaTypeId
+LEFT JOIN genres on genres.GenreId = tracks.GenreId
+
+#Show the total sales made by each Sales Agent
+SELECT employees.FirstName||' '||employees.LastName as Employee, COUNT(*) as TotalSales
+FROM employees
+LEFT JOIN customers on customers.SupportRepId = employees.EmployeeId
+LEFT JOIN invoices on  invoices.CustomerId = customers.CustomerId
+GROUP BY employees.EmployeeId
+
+#Which Sales Agent made the most money in 2009
+SELECT employees.FirstName||' '||employees.LastName as Employee, SUM(invoices.Total) as earnings
+FROM employees
+LEFT JOIN customers on customers.SupportRepId = employees.EmployeeId
+LEFT JOIN invoices on invoices.CustomerId = customers.CustomerId
+WHERE invoices.InvoiceDate LIKE '%2009%'
+GROUP BY Employee
+ORDER BY earnings desc limit 1
