@@ -71,7 +71,7 @@ LEFT JOIN invoices on  invoices.CustomerId = customers.CustomerId
 GROUP BY employees.EmployeeId
 
 #Which Sales Agent made the most money in 2009
-SELECT employees.FirstName||' '||employees.LastName as Employee, SUM(invoices.Total) as earnings
+SELECT employees.FirstName||' '||employees.LastName as Employee, round(SUM(invoices.Total),2) as earnings
 FROM employees
 LEFT JOIN customers on customers.SupportRepId = employees.EmployeeId
 LEFT JOIN invoices on invoices.CustomerId = customers.CustomerId
